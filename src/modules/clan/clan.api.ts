@@ -3,7 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
-import { ClanSearchResult, ClanMember, WgApiResponse, ClanDetailsMap, Clan } from '../../types';
+import {
+    ClanSearchResult,
+    ClanMember,
+    WgApiResponse,
+    ClanDetailsMap,
+    Clan,
+} from '../../types';
 
 @Injectable()
 export class ClanApiService {

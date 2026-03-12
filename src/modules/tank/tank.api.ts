@@ -21,7 +21,7 @@ export class TankApiService {
         }
     }
 
-    async getTanks(tier: string): Promise<Tank[]> {
+    async getTanks(tier: string): Promise<Record<string, Tank[]>> {
         const vehicleTypes = [
             'lightTank',
             'mediumTank',
@@ -33,25 +33,40 @@ export class TankApiService {
         const promises = vehicleTypes.map((type) => {
             const url = `https://api.worldoftanks.eu/wot/encyclopedia/vehicles/?application_id=${this.apiKey}&tier=${tier}&fields=name%2Cnation%2Ctier%2Ctype%2C+&type=${type}`;
 
-            return firstValueFrom(
-                this.httpService.get<WgApiResponse<TankMap>>(url).pipe(
-                    catchError((error: AxiosError) => {
-                        throw error;
-                    }),
+            return [
+                type,
+                firstValueFrom(
+                    this.httpService.get<WgApiResponse<TankMap>>(url).pipe(
+                        catchError((error: AxiosError) => {
+                            throw error;
+                        }),
+                    ),
                 ),
-            );
+            ] as const;
         });
 
-        const responses = await Promise.all(promises);
-        const tanks: Tank[] = [];
+        const responses = await Promise.all(
+            promises.map(
+                async ([type, promise]) => [type, await promise] as const,
+            ),
+        );
 
-        responses.forEach((response) => {
+        const tanks: Record<string, Tank[]> = {
+            lightTank: [],
+            mediumTank: [],
+            heavyTank: [],
+            'AT-SPG': [],
+            SPG: [],
+        };
+
+        responses.forEach(([type, response]) => {
             const tankMap = response.data.data;
             Object.values(tankMap).forEach((tank) => {
-                tanks.push(tank);
+                tanks[type].push(tank);
             });
         });
 
+        console.log(tanks);
         return tanks;
     }
 }
