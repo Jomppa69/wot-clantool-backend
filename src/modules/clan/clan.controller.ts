@@ -19,4 +19,14 @@ export class ClanController {
     getClanDetails(@Param('id') id: string) {
         return this.clanService.getClanDetails(id);
     }
+
+    @Get(':id/members/details')
+    getMemberDetails(@Param('id') id: string) {
+        return this.clanService.getMemberDetails(id);
+    }
+
+    @Get(':id/members/vehicle-stats')
+    getMemberVehicleStatistics(@Param('id') id: string) {
+        return this.clanService.getClanVehicleStatistics(id);
+    }
 }

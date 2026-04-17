@@ -9,5 +9,6 @@ import { ConfigModule } from '@nestjs/config';
     controllers: [TankController],
     providers: [TankService, TankApiService],
     imports: [HttpModule, ConfigModule],
+    exports: [TankService],
 })
 export class TankModule {}

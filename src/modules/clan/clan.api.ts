@@ -9,6 +9,9 @@ import {
     WgApiResponse,
     ClanDetailsMap,
     Clan,
+    MemberDetails,
+    TankStatisticsMap,
+    PlayerVehicleStatistics,
 } from '../../types';
 
 @Injectable()
@@ -21,9 +24,7 @@ export class ClanApiService {
     ) {
         this.apiKey = this.configService.get<string>('WG_API_KEY');
         if (!this.apiKey) {
-            throw new Error(
-                'WG_API_KEY is not defined in environment variables',
-            );
+            throw new Error('WG_API_KEY is not defined in environment variables');
         }
     }
 
@@ -39,14 +40,12 @@ export class ClanApiService {
         );
 
         const responseData = response.data;
-        if (!responseData || !Array.isArray(responseData.data))
-            throw new Error('Unexpected API response');
+        if (!responseData || !Array.isArray(responseData.data)) throw new Error('Unexpected API response');
 
         return responseData.data;
     }
 
     async GetClanMembers(clanId: string): Promise<ClanMember[]> {
-        // Filtered -emblems.x195,-emblems.x24,-emblems.x256,-emblems.x32,-emblems.x64,-tag,-leader_id,-color,-updated_at,-private,-description_html,-accepts_join_requests,-leader_name,-emblems,-clan_id,-renamed_at,-old_tag,-description,-members_count,-name,-creator_name,-created_at,-creator_id,-is_clan_disbanded,-motto,-old_name
         const url = `https://api.worldoftanks.eu/wot/clans/info/?application_id=${this.apiKey}&fields=members&clan_id=${clanId}`;
 
         const { data: response } = await firstValueFrom(
@@ -74,5 +73,56 @@ export class ClanApiService {
         );
         console.log(response);
         return response.data[clanId];
+    }
+
+    async getMembersDetails(memberIds: number[]): Promise<Record<string, Partial<MemberDetails>>> {
+        const fields = ['account_id', 'global_rating', 'last_battle_time'];
+        const url = `https://api.worldoftanks.eu/wot/account/info/?application_id=${this.apiKey}&account_id=${memberIds.join(',')}&fields=${fields.join(',')}`;
+
+        const { data: response } = await firstValueFrom(
+            this.httpService.get<WgApiResponse<Record<string, Partial<MemberDetails>>>>(url).pipe(
+                catchError((error: AxiosError) => {
+                    throw error;
+                }),
+            ),
+        );
+        return response.data;
+    }
+
+    async getVehicleStatistics(memberId: number, tankIds: number[]) {
+        const vehicle_stats: Record<string, PlayerVehicleStatistics> = {};
+        const fields = [
+            'tank_id',
+            'random',
+            '-random.battles_on_stunning_vehicles',
+            '-random.max_xp',
+            '-random.capture_points',
+            '-random.max_frags',
+            '-random.stun_number',
+            '-random.max_damage',
+        ];
+
+        // Max 100 tankIds per request. Split into chunks if necessary.
+        const chunks: number[][] = [];
+        for (let i = 0; i < tankIds.length; i += 100) {
+            chunks.push(tankIds.slice(i, i + 100));
+        }
+
+        for (const chunk of chunks) {
+            const url = `https://api.worldoftanks.eu/wot/tanks/stats/?application_id=${this.apiKey}&account_id=${memberId}&tank_id=${chunk.join(',')}&fields=${fields.join(',')}&extra=random`;
+            const { data: response } = await firstValueFrom(
+                this.httpService.get<WgApiResponse<TankStatisticsMap>>(url).pipe(
+                    catchError((error: AxiosError) => {
+                        throw error;
+                    }),
+                ),
+            );
+            if (response.data[memberId]) {
+                for (const tank of response.data[memberId]) {
+                    vehicle_stats[tank.tank_id] = tank.random;
+                }
+            }
+        }
+        return vehicle_stats;
     }
 }

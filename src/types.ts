@@ -30,11 +30,41 @@ export interface ClanMember {
     account_name: string;
 }
 
+export interface MemberDetails {
+    account_id: number;
+    global_rating: number;
+    last_battle_time: number;
+    vehicle_stats: Record<string, PlayerVehicleStatistics>;
+}
+
 export interface Tank {
     name: string;
     nation: string;
     tier: number;
     type: string;
+    tank_id: number;
+}
+
+export interface PlayerVehicleStatistics {
+    tank_id: number;
+    spotted: number;
+    hits_percents: number;
+    track_assisted_damage: number;
+    draws: number;
+    wins: number;
+    losses: number;
+    hits: number;
+    battles: number;
+    dropped_capture_points: number;
+    stun_assisted_damage: number;
+    damage_dealt: number;
+    battle_avg_xp: number;
+    damage_received: number;
+    shots: number;
+    radio_assisted_damage: number;
+    xp: number;
+    frags: number;
+    survived_battles: number;
 }
 
 export interface Clan {
@@ -65,6 +95,8 @@ export interface Clan {
 export type ClanDetailsMap = Record<string, Clan>;
 
 export type TankMap = Record<string, Tank>;
+
+export type TankStatisticsMap = Record<string, { random: PlayerVehicleStatistics; tank_id: number }[]>;
 
 export interface WgApiResponse<T> {
     status: string;
