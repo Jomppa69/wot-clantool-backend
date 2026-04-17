@@ -15,23 +15,16 @@ export class TankApiService {
     ) {
         this.apiKey = this.configService.get<string>('WG_API_KEY');
         if (!this.apiKey) {
-            throw new Error(
-                'WG_API_KEY is not defined in environment variables',
-            );
+            throw new Error('WG_API_KEY is not defined in environment variables');
         }
     }
 
     async getTanks(tier: string): Promise<Record<string, Tank[]>> {
-        const vehicleTypes = [
-            'lightTank',
-            'mediumTank',
-            'heavyTank',
-            'AT-SPG',
-            'SPG',
-        ];
+        const vehicleTypes = ['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG'];
 
         const promises = vehicleTypes.map((type) => {
-            const url = `https://api.worldoftanks.eu/wot/encyclopedia/vehicles/?application_id=${this.apiKey}&tier=${tier}&fields=name%2Cnation%2Ctier%2Ctype%2C+&type=${type}`;
+            const fields = ['name', 'nation', 'tier', 'type', 'tank_id'];
+            const url = `https://api.worldoftanks.eu/wot/encyclopedia/vehicles/?application_id=${this.apiKey}&tier=${tier}&fields=${fields.join(',')}&type=${type}`;
 
             return [
                 type,
@@ -45,11 +38,7 @@ export class TankApiService {
             ] as const;
         });
 
-        const responses = await Promise.all(
-            promises.map(
-                async ([type, promise]) => [type, await promise] as const,
-            ),
-        );
+        const responses = await Promise.all(promises.map(async ([type, promise]) => [type, await promise] as const));
 
         const tanks: Record<string, Tank[]> = {
             lightTank: [],
