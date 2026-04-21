@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ClanApiService } from './clan.api';
 import { TankService } from '../tank/tank.service';
-import { MemberDetails } from 'src/types';
+import { PlayerDetails } from 'src/types';
+import { PlayerService } from '../player/player.service';
 
 @Injectable()
 export class ClanService {
     constructor(
         private readonly clanApiService: ClanApiService,
         private readonly tankService: TankService,
+        private readonly playerService: PlayerService,
     ) {}
 
     searchClan(name: string) {
@@ -26,24 +28,24 @@ export class ClanService {
         const clanMemberList = await this.getClanMembers(clanId);
         const memberIds = clanMemberList.map((member) => member.account_id);
 
-        const clanMembersDetails = await this.clanApiService.getMembersDetails(memberIds);
+        const clanMembersDetails = await this.playerService.getMembersDetails(memberIds);
         return clanMembersDetails;
     }
 
     async getClanVehicleStatistics(clanId: string) {
         const clanMemberList = await this.getClanMembers(clanId);
-        const memberIds = clanMemberList.map((member) => member.account_id);
+        const memberIds = clanMemberList.map((member) => member.account_id.toString());
 
         const tankIds = await this.tankService.getTanks('10').then((tanks) =>
             Object.values(tanks)
                 .flat()
-                .map((tank) => tank.tank_id),
+                .map((tank) => tank.tank_id.toString()),
         );
 
-        const vehicleStatistics: Record<string, Partial<MemberDetails>> = {};
+        const vehicleStatistics: Record<string, Partial<PlayerDetails>> = {};
 
         for (const memberId of memberIds) {
-            const vehicle_stats = await this.clanApiService.getVehicleStatistics(memberId, tankIds);
+            const vehicle_stats = await this.playerService.getPlayerVehicleStatistics(memberId, tankIds);
             vehicleStatistics[memberId] = { vehicle_stats: vehicle_stats };
         }
 

@@ -55,7 +55,6 @@ export class TankApiService {
             });
         });
 
-        console.log(tanks);
         return tanks;
     }
 }

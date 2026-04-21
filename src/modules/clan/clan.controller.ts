@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ClanService } from './clan.service';
 
-@Controller('clans')
+@Controller('clan')
 export class ClanController {
     constructor(private readonly clanService: ClanService) {}
 

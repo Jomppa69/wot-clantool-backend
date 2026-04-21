@@ -13,7 +13,7 @@ export interface ClanEmblems {
 }
 
 export interface ClanSearchResult {
-    clan_id: number;
+    clan_id: string;
     members_count: number;
     name: string;
     color: string;
@@ -26,12 +26,12 @@ export interface ClanMember {
     role: string;
     role_i18n: string;
     joined_at: number;
-    account_id: number;
+    account_id: string;
     account_name: string;
 }
 
-export interface MemberDetails {
-    account_id: number;
+export interface PlayerDetails {
+    account_id: string;
     global_rating: number;
     last_battle_time: number;
     vehicle_stats: Record<string, PlayerVehicleStatistics>;
@@ -42,11 +42,11 @@ export interface Tank {
     nation: string;
     tier: number;
     type: string;
-    tank_id: number;
+    tank_id: string;
 }
 
 export interface PlayerVehicleStatistics {
-    tank_id: number;
+    tank_id: string;
     spotted: number;
     hits_percents: number;
     track_assisted_damage: number;
@@ -91,6 +91,24 @@ export interface Clan {
     old_tag?: string;
     name?: string;
 }
+
+export interface ExpectedValues {
+    IDNum: number;
+    expDef: number;
+    expFrag: number;
+    expSpot: number;
+    expDamage: number;
+    expWinRate: number;
+}
+
+export type ExpectedValuesResponse = {
+    data: Record<string, ExpectedValues>[];
+    header: {
+        url: string;
+        source: string;
+        version: string;
+    };
+};
 
 export type ClanDetailsMap = Record<string, Clan>;
 

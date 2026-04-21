@@ -5,10 +5,11 @@ import { ClanController } from './clan.controller';
 import { HttpModule } from '@nestjs/axios';
 import { ClanApiService } from './clan.api';
 import { TankModule } from '../tank/tank.module';
+import { PlayerModule } from '../player/player.module';
 
 @Module({
     controllers: [ClanController],
     providers: [ClanService, ClanApiService],
-    imports: [HttpModule, ConfigModule, TankModule],
+    imports: [HttpModule, ConfigModule, TankModule, PlayerModule],
 })
 export class ClanModule {}
