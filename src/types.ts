@@ -22,20 +22,34 @@ export interface ClanSearchResult {
     emblems: ClanEmblems;
 }
 
-export interface ClanMember {
+export interface PlayerClanDetails {
     role: string;
     role_i18n: string;
     joined_at: number;
     account_id: string;
     account_name: string;
+    clan_id: string;
 }
 
-export interface PlayerDetails {
+export interface PlayerOverview {
     account_id: string;
     global_rating: number;
     last_battle_time: number;
-    vehicle_stats: Record<string, PlayerVehicleStatistics>;
 }
+
+export interface PlayerDetails {
+    role: string;
+    role_i18n: string;
+    joined_at: number;
+    clan_id: string;
+    account_id: string;
+    account_name: string;
+    global_rating: number;
+    last_battle_time: number;
+    vehicle_stats: Record<string, PlayerVehicleDetails>;
+}
+
+export type PlayerDetailsMap = Record<string, PlayerDetails>;
 
 export interface Tank {
     name: string;
@@ -45,7 +59,7 @@ export interface Tank {
     tank_id: string;
 }
 
-export interface PlayerVehicleStatistics {
+export interface PlayerVehicleDetails {
     tank_id: string;
     spotted: number;
     hits_percents: number;
@@ -68,7 +82,7 @@ export interface PlayerVehicleStatistics {
 }
 
 export interface Clan {
-    members?: ClanMember[];
+    members?: PlayerClanDetails[];
     creator_name?: string;
     members_count?: number;
     description?: string | null;
@@ -114,7 +128,7 @@ export type ClanDetailsMap = Record<string, Clan>;
 
 export type TankMap = Record<string, Tank>;
 
-export type TankStatisticsMap = Record<string, { random: PlayerVehicleStatistics; tank_id: number }[]>;
+export type TankStatisticsMap = Record<string, { random: PlayerVehicleDetails; tank_id: number }[]>;
 
 export interface WgApiResponse<T> {
     status: string;

@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
-import { ClanSearchResult, ClanMember, WgApiResponse, ClanDetailsMap, Clan, PlayerDetails } from '../../types';
+import { ClanSearchResult, PlayerClanDetails, WgApiResponse, ClanDetailsMap, Clan, PlayerOverview } from '../../types';
 
 @Injectable()
 export class ClanApiService {
     private readonly apiKey: string | undefined;
+    // TODO: Implement logger for api calls!
+    private readonly logger = new Logger(ClanApiService.name);
 
     constructor(
         private configService: ConfigService,
@@ -36,9 +38,8 @@ export class ClanApiService {
         return responseData.data;
     }
 
-    async GetClanMembers(clanId: string): Promise<ClanMember[]> {
+    async GetClanMembers(clanId: string): Promise<Record<string, PlayerClanDetails>> {
         const url = `https://api.worldoftanks.eu/wot/clans/info/?application_id=${this.apiKey}&fields=members&clan_id=${clanId}`;
-
         const { data: response } = await firstValueFrom(
             this.httpService.get<WgApiResponse<ClanDetailsMap>>(url).pipe(
                 catchError((error: AxiosError) => {
@@ -49,7 +50,9 @@ export class ClanApiService {
         if (!response.data[clanId].members) {
             throw new Error('Unexpected API response: Missing members data');
         }
-        return response.data[clanId].members;
+
+        const members = Object.fromEntries(response.data[clanId].members?.map((member) => [member.account_id, member]));
+        return members;
     }
 
     async getClanDetails(clanId: string): Promise<Clan> {

@@ -5,10 +5,11 @@ import { PlayerApiService } from './player.api';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { TankModule } from '../tank/tank.module';
+import { StorageService } from 'src/common/storage/storage.service';
 
 @Module({
     controllers: [PlayerController],
-    providers: [PlayerService, PlayerApiService],
+    providers: [PlayerService, PlayerApiService, StorageService],
     imports: [HttpModule, ConfigModule, TankModule],
     exports: [PlayerService],
 })

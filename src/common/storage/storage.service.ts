@@ -9,6 +9,12 @@ export class StorageService {
         return fs.existsSync(filePath);
     }
 
+    checkFileOrDirectoryAge(filePath: string): number {
+        const stats = fs.statSync(filePath);
+        const ageMs = Date.now() - stats.mtimeMs;
+        return ageMs;
+    }
+
     readFile(filePath: string, fileName: string): string {
         try {
             return fs.readFileSync(`${filePath}/${fileName}`, 'utf-8');

@@ -1,12 +1,13 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
-import { PlayerDetails, PlayerVehicleStatistics, TankStatisticsMap, WgApiResponse } from 'src/types';
+import { PlayerClanDetails, PlayerOverview, PlayerVehicleDetails, TankStatisticsMap, WgApiResponse } from 'src/types';
 
 @Injectable()
 export class PlayerApiService {
+    private readonly logger = new Logger(PlayerApiService.name);
     private readonly apiKey: string | undefined;
 
     constructor(
@@ -19,12 +20,27 @@ export class PlayerApiService {
         }
     }
 
-    async getPlayerDetails(playerIds: string[]): Promise<Record<string, Partial<PlayerDetails>>> {
+    // Edit this out from clan module. Make clan module go through single player details and not get all at once
+    async getPlayerOverview(playerIds: string[]): Promise<Record<string, PlayerOverview>> {
         const fields = ['account_id', 'global_rating', 'last_battle_time'];
         const url = `https://api.worldoftanks.eu/wot/account/info/?application_id=${this.apiKey}&account_id=${playerIds.join(',')}&fields=${fields.join(',')}`;
 
         const { data: response } = await firstValueFrom(
-            this.httpService.get<WgApiResponse<Record<string, Partial<PlayerDetails>>>>(url).pipe(
+            this.httpService.get<WgApiResponse<Record<string, PlayerOverview>>>(url).pipe(
+                catchError((error: AxiosError) => {
+                    throw error;
+                }),
+            ),
+        );
+        return response.data;
+    }
+
+    async getPlayerClanDetails(playerIds: string[]): Promise<Record<string, PlayerClanDetails>> {
+        const fields = ['role', 'role_i18n', 'joined_at', 'clan.clan_id'];
+        const url = `https://api.worldoftanks.eu/wot/clans/accountinfo/?application_id=f0caf677f57a195024f047e27c2913dd&account_id=${playerIds.join(',')}&fields=${fields.join(',')}`
+
+        const { data: response } = await firstValueFrom(
+            this.httpService.get<WgApiResponse<Record<string, PlayerClanDetails>>>(url).pipe(
                 catchError((error: AxiosError) => {
                     throw error;
                 }),
@@ -47,7 +63,7 @@ export class PlayerApiService {
     }
 
     async getVehicleStatistics(memberId: string, tankIds: string[]) {
-        const vehicle_stats: Record<string, PlayerVehicleStatistics> = {};
+        const vehicle_stats: Record<string, PlayerVehicleDetails> = {};
         const fields = [
             'tank_id',
             'random',

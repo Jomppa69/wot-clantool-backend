@@ -7,7 +7,7 @@ export class PlayerController {
 
     @Get(':id')
     getPlayerDetails(@Param('id') id: string) {
-        return this.playerService.getPlayerDetails(id);
+        return this.playerService.getPlayerDetails([id]);
     }
 
     @Get(':id/vehicles')
