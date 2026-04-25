@@ -21,8 +21,8 @@ export class PlayerApiService {
     }
 
     // Edit this out from clan module. Make clan module go through single player details and not get all at once
-    async getPlayerOverview(playerIds: string[]): Promise<Record<string, PlayerOverview>> {
-        const fields = ['account_id', 'global_rating', 'last_battle_time'];
+    async getPlayerOverview(playerIds: number[]): Promise<Record<string, PlayerOverview>> {
+        const fields = ['account_id', 'global_rating', 'last_battle_time', 'nickname'];
         const url = `https://api.worldoftanks.eu/wot/account/info/?application_id=${this.apiKey}&account_id=${playerIds.join(',')}&fields=${fields.join(',')}`;
 
         const { data: response } = await firstValueFrom(
@@ -35,7 +35,7 @@ export class PlayerApiService {
         return response.data;
     }
 
-    async getPlayerClanDetails(playerIds: string[]): Promise<Record<string, PlayerClanDetails>> {
+    async getPlayerClanDetails(playerIds: number[]): Promise<Record<string, PlayerClanDetails>> {
         const fields = ['role', 'role_i18n', 'joined_at', 'clan.clan_id'];
         const url = `https://api.worldoftanks.eu/wot/clans/accountinfo/?application_id=f0caf677f57a195024f047e27c2913dd&account_id=${playerIds.join(',')}&fields=${fields.join(',')}`
 
@@ -49,11 +49,11 @@ export class PlayerApiService {
         return response.data;
     }
 
-    async getPlayerVehicles(playerId: string) {
+    async getPlayerVehicles(playerId: number) {
         const url = `https://api.worldoftanks.eu/wot/account/tanks/?application_id=${this.apiKey}&account_id=${playerId}&fields=tank_id`;
 
         const { data: response } = await firstValueFrom(
-            this.httpService.get<WgApiResponse<Record<string, { tank_id: string }[]>>>(url).pipe(
+            this.httpService.get<WgApiResponse<Record<string, { tank_id: number }[]>>>(url).pipe(
                 catchError((error: AxiosError) => {
                     throw error;
                 }),
@@ -62,7 +62,7 @@ export class PlayerApiService {
         return response.data;
     }
 
-    async getVehicleStatistics(memberId: string, tankIds: string[]) {
+    async getVehicleStatistics(memberId: number, tankIds: number[]) {
         const vehicle_stats: Record<string, PlayerVehicleDetails> = {};
         const fields = [
             'tank_id',
@@ -76,7 +76,7 @@ export class PlayerApiService {
         ];
 
         // Max 100 tankIds per request. Split into chunks if necessary.
-        const chunks: string[][] = [];
+        const chunks: number[][] = [];
         for (let i = 0; i < tankIds.length; i += 100) {
             chunks.push(tankIds.slice(i, i + 100));
         }

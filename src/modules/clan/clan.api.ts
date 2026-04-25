@@ -38,7 +38,7 @@ export class ClanApiService {
         return responseData.data;
     }
 
-    async GetClanMembers(clanId: string): Promise<Record<string, PlayerClanDetails>> {
+    async GetClanMembers(clanId: number): Promise<Record<string, PlayerClanDetails>> {
         const url = `https://api.worldoftanks.eu/wot/clans/info/?application_id=${this.apiKey}&fields=members&clan_id=${clanId}`;
         const { data: response } = await firstValueFrom(
             this.httpService.get<WgApiResponse<ClanDetailsMap>>(url).pipe(
@@ -55,7 +55,7 @@ export class ClanApiService {
         return members;
     }
 
-    async getClanDetails(clanId: string): Promise<Clan> {
+    async getClanDetails(clanId: number): Promise<Clan> {
         const url = `https://api.worldoftanks.eu/wot/clans/info/?application_id=${this.apiKey}&clan_id=${clanId}&fields=-members`;
 
         const { data: response } = await firstValueFrom(

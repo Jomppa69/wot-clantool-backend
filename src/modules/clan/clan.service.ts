@@ -17,7 +17,7 @@ export class ClanService {
     }
 
     // Gets clan members as member ids
-    async getClanMembers(clanId: string) {
+    async getClanMembers(clanId: number) {
         const clanMembers = await this.clanApiService.GetClanMembers(clanId);
         for (const member of Object.values(clanMembers)) {
             member.joined_at = Number(member.joined_at) * 1000; // Convert to milliseconds
@@ -25,7 +25,7 @@ export class ClanService {
         return clanMembers;
     }
 
-    async getMemberDetails(clanId: string): Promise<PlayerDetailsMap> {
+    async getMemberDetails(clanId: number): Promise<PlayerDetailsMap> {
         const clanMembers = await this.getClanMembers(clanId);
         const memberIds = Object.values(clanMembers).map((member) => member.account_id);
 
@@ -33,7 +33,7 @@ export class ClanService {
         return memberDetailsMap;
     }
 
-    getClanDetails(clanId: string) {
+    getClanDetails(clanId: number) {
         return this.clanApiService.getClanDetails(clanId);
     }
 }

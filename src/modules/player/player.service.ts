@@ -15,10 +15,10 @@ export class PlayerService {
     // genereate new details for ids that need interface
     // read details of okay members from file
     // combine details and return
-    async getPlayerDetails(ids: string[]): Promise<PlayerDetailsMap> {
+    async getPlayerDetails(ids: number[]): Promise<PlayerDetailsMap> {
         const filePath = 'data/players';
 
-        const idsWithDeprecatedData: string[] = [];
+        const idsWithDeprecatedData: number[] = [];
 
         const playerDetailsMap: PlayerDetailsMap = {};
         for (const id of ids) {
@@ -41,10 +41,10 @@ export class PlayerService {
         return { ...playerDetailsMap, ...missingPlayerDetails };
     }
 
-    private async createPlayerDetails(ids: string[]) {
+    private async createPlayerDetails(ids: number[]) {
         const playerOverviews = await this.playerApiService.getPlayerOverview(ids);
         const playerClanInfo = await this.playerApiService.getPlayerClanDetails(ids);
-        const playerVehicleDetails: Record<string, Record<string, PlayerVehicleDetails>> = {};
+        const playerVehicleDetails: Record<string, Record<number, PlayerVehicleDetails>> = {};
         for (const id of ids) {
             playerVehicleDetails[id] = await this.getPlayerVehicleStatistics(id);
         }
@@ -69,16 +69,16 @@ export class PlayerService {
         return playerDetailsMap;
     }
 
-    async getPlayerVehicleStatistics(playerId: string, tankIds?: string[]) {
+    async getPlayerVehicleStatistics(playerId: number, tankIds?: number[]) {
         if (!tankIds) {
             const playerVehicles = await this.playerApiService.getPlayerVehicles(playerId);
-            tankIds = playerVehicles[playerId].map((vehicle) => String(vehicle.tank_id));
+            tankIds = playerVehicles[playerId].map((vehicle) => vehicle.tank_id);
         }
 
         return this.playerApiService.getVehicleStatistics(playerId, tankIds);
     }
 
-    getPlayerVehicles(playerId: string) {
+    getPlayerVehicles(playerId: number) {
         return this.playerApiService.getPlayerVehicles(playerId);
     }
 }

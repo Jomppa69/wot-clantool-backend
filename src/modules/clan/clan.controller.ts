@@ -11,17 +11,17 @@ export class ClanController {
     }
 
     @Get(':id/members')
-    getClanMembers(@Param('id') id: string) {
+    getClanMembers(@Param('id') id: number) {
         return this.clanService.getClanMembers(id);
     }
 
     @Get(':id')
-    getClanDetails(@Param('id') id: string) {
+    getClanDetails(@Param('id') id: number) {
         return this.clanService.getClanDetails(id);
     }
 
     @Get(':id/members/details')
-    getMemberDetails(@Param('id') id: string) {
+    getMemberDetails(@Param('id') id: number) {
         return this.clanService.getMemberDetails(id);
     }
 }

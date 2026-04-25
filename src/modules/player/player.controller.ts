@@ -6,17 +6,17 @@ export class PlayerController {
     constructor(private readonly playerService: PlayerService) {}
 
     @Get(':id')
-    getPlayerDetails(@Param('id') id: string) {
+    getPlayerDetails(@Param('id') id: number) {
         return this.playerService.getPlayerDetails([id]);
     }
 
     @Get(':id/vehicles')
-    getPlayerVehicles(@Param('id') id: string, @Query('tier') tier: string[]) {
+    getPlayerVehicles(@Param('id') id: number, @Query('tier') tier: string[]) {
         return this.playerService.getPlayerVehicles(id);
     }
 
     @Get(':id/vehicles/details')
-    getPlayerVehicleDetails(@Param('id') id: string, @Query('vehicles') vehicles?: string[]) {
+    getPlayerVehicleDetails(@Param('id') id: number, @Query('vehicles') vehicles?: number[]) {
         return this.playerService.getPlayerVehicleStatistics(id, vehicles);
     }
 }
