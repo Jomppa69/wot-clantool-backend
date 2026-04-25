@@ -92,7 +92,10 @@ export class PlayerApiService {
             );
             if (response.data[memberId]) {
                 for (const tank of response.data[memberId]) {
-                    vehicle_stats[tank.tank_id] = tank.random;
+                    vehicle_stats[tank.tank_id] = {
+                        ...tank.random,
+                        tank_id: tank.tank_id,
+                    };
                 }
             }
         }

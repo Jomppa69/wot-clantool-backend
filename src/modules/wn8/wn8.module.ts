@@ -4,11 +4,12 @@ import { Wn8Controller } from './wn8.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { Wn8ApiService } from './wn8.api';
 import { HttpModule } from '@nestjs/axios';
-import { StorageService } from 'src/common/storage/storage.service';
+import { StorageModule } from 'src/common/storage/storage.module';
 
 @Module({
     controllers: [Wn8Controller],
-    providers: [Wn8Service, Wn8ApiService, StorageService],
-    imports: [HttpModule, ScheduleModule],
+    providers: [Wn8Service, Wn8ApiService],
+    imports: [HttpModule, ScheduleModule, StorageModule],
+    exports: [Wn8Service],
 })
 export class Wn8Module {}

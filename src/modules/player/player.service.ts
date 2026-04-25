@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PlayerApiService } from './player.api';
 import { PlayerDetails, PlayerDetailsMap, PlayerVehicleDetails } from 'src/types';
 import { StorageService } from 'src/common/storage/storage.service';
+import { Wn8Service } from '../wn8/wn8.service';
 
 @Injectable()
 export class PlayerService {
     constructor(
         private readonly playerApiService: PlayerApiService,
         private readonly storageService: StorageService,
+        private readonly wn8Service: Wn8Service,
     ) {}
 
     // Check for existing player details -> if exists check age
@@ -53,12 +55,23 @@ export class PlayerService {
         const playerDetailsMap: PlayerDetailsMap = {};
 
         for (const id of ids) {
+            const totalBattles = Object.values(playerVehicleDetails[id]).reduce((total, vehicle) => {
+                return total + vehicle.battles;
+            }, 0);
+            const { clan, ...playerClanData } = playerClanInfo[id];
+
             const playerDetails: PlayerDetails = {
                 ...playerOverviews[id],
-                ...playerClanInfo[id],
+                ...playerClanData,
+                clan_id: clan.clan_id,
+                battles: totalBattles,
                 vehicle_stats: playerVehicleDetails[id],
+                wn8: 0,
             };
-            playerDetailsMap[id] = playerDetails;
+
+            const finalPlayerDetails = this.wn8Service.getPlayerWn8(playerDetails);
+
+            playerDetailsMap[id] = finalPlayerDetails;
 
             const filePath = `data/players/`;
             const fileName = `${playerDetails.account_id}.json`;
