@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ClanApiService } from './clan.api';
 import { TankService } from '../tank/tank.service';
-import { PlayerDetails, PlayerDetailsMap } from 'src/types';
+import { PlayerDetailsMap } from 'src/types';
 import { PlayerService } from '../player/player.service';
 
 @Injectable()

@@ -3,7 +3,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
-import { PlayerClanDetails, PlayerOverview, PlayerVehicleDetails, TankStatisticsMap, WgApiResponse } from 'src/types';
+import { PlayerClanDetails, PlayerVehicleDetails, TankStatisticsMap, WgApiResponse } from 'src/types';
+
+interface PlayerOverview {
+    account_id: number;
+    global_rating: number;
+    last_battle_time: number;
+    nickname: string;
+}
 
 @Injectable()
 export class PlayerApiService {

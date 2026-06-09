@@ -22,6 +22,9 @@ export interface ClanSearchResult {
     emblems: ClanEmblems;
 }
 
+// Used in following modules and functions:
+// clan: GetClanMembers
+// player: GetPlayerClanDetails
 export interface PlayerClanDetails {
     role: string;
     role_i18n: string;
@@ -32,13 +35,8 @@ export interface PlayerClanDetails {
     };
 }
 
-export interface PlayerOverview {
-    account_id: number;
-    global_rating: number;
-    last_battle_time: number;
-    nickname: string;
-}
-
+// Used in following modules and functions:
+// player: GetPlayerDetails
 export interface PlayerDetails {
     role: string;
     role_i18n: string;
@@ -50,6 +48,10 @@ export interface PlayerDetails {
     last_battle_time: number;
     vehicle_stats: Record<string, PlayerVehicleDetails>;
     battles: number;
+    wins: number;
+    losses: number;
+    draws: number;
+    winrate: number;
     wn8: number;
 }
 

@@ -55,9 +55,16 @@ export class PlayerService {
         const playerDetailsMap: PlayerDetailsMap = {};
 
         for (const id of ids) {
-            const totalBattles = Object.values(playerVehicleDetails[id]).reduce((total, vehicle) => {
-                return total + vehicle.battles;
-            }, 0);
+            // Get total account stats from vehicles
+            const { totalBattles, totalWins, totalLosses, totalDraws } = Object.values(playerVehicleDetails[id]).reduce(
+                (totals, vehicle) => ({
+                    totalBattles: totals.totalBattles + vehicle.battles,
+                    totalWins: totals.totalWins + vehicle.wins,
+                    totalLosses: totals.totalLosses + vehicle.losses,
+                    totalDraws: totals.totalDraws + vehicle.draws,
+                }),
+                { totalBattles: 0, totalWins: 0, totalLosses: 0, totalDraws: 0 },
+            );
             const { clan, ...playerClanData } = playerClanInfo[id];
 
             const playerDetails: PlayerDetails = {
@@ -65,7 +72,11 @@ export class PlayerService {
                 ...playerClanData,
                 clan_id: clan.clan_id,
                 battles: totalBattles,
+                wins: totalWins,
+                losses: totalLosses,
+                draws: totalDraws,
                 vehicle_stats: playerVehicleDetails[id],
+                winrate: parseFloat(((totalWins / totalBattles) * 100).toFixed(2)),
                 wn8: 0,
             };
 
@@ -82,6 +93,7 @@ export class PlayerService {
         return playerDetailsMap;
     }
 
+    // THIS SOMETIMES THROWS AN WEIRD ERRORS SAYING SOMETHING LIKE: 'error reading undefinded 23131312'.
     async getPlayerVehicleStatistics(playerId: number, tankIds?: number[]) {
         if (!tankIds) {
             const playerVehicles = await this.playerApiService.getPlayerVehicles(playerId);
