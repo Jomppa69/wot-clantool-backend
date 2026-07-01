@@ -7,8 +7,9 @@ export class LoggingMiddleware implements NestMiddleware {
 
     use(req: Request, res: Response, next: NextFunction) {
         const start = Date.now();
+        this.logger.log(`${req.method} ${req.originalUrl} - received`);
         res.on('finish', () => {
-            this.logger.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${Date.now() - start}ms`);
+            this.logger.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${(Date.now() - start) / 1000}s`);
         });
         next();
     }

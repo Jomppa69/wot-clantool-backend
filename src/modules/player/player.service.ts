@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PlayerApiService } from './player.api';
 import { PlayerDetails, PlayerDetailsMap, PlayerVehicleDetails } from 'src/types';
 import { StorageService } from 'src/common/storage/storage.service';
@@ -6,6 +6,7 @@ import { Wn8Service } from '../wn8/wn8.service';
 
 @Injectable()
 export class PlayerService {
+    private readonly logger = new Logger(PlayerService.name);
     constructor(
         private readonly playerApiService: PlayerApiService,
         private readonly storageService: StorageService,
@@ -38,6 +39,7 @@ export class PlayerService {
         }
         let missingPlayerDetails = {};
         if (idsWithDeprecatedData.length > 0) {
+            this.logger.debug(`PlayerVehicleDetails missing or outdated for ${idsWithDeprecatedData.length} players, fetching new details...`);
             missingPlayerDetails = await this.createPlayerDetails(idsWithDeprecatedData);
         }
         return { ...playerDetailsMap, ...missingPlayerDetails };
@@ -99,8 +101,13 @@ export class PlayerService {
             const playerVehicles = await this.playerApiService.getPlayerVehicles(playerId);
             tankIds = playerVehicles[playerId].map((vehicle) => vehicle.tank_id);
         }
+        const vehicleStatistics = await this.playerApiService.getVehicleStatistics(playerId, tankIds);
 
-        return this.playerApiService.getVehicleStatistics(playerId, tankIds);
+        for (const vehicle of Object.values(vehicleStatistics)) {
+            const winrate = vehicle.battles > 0 ? parseFloat(((vehicle.wins / vehicle.battles) * 100).toFixed(2)) : 0;
+            vehicle.winrate = winrate;
+        }
+        return vehicleStatistics;
     }
 
     getPlayerVehicles(playerId: number) {

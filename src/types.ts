@@ -59,9 +59,15 @@ export type PlayerDetailsMap = Record<string, PlayerDetails>;
 
 export interface Tank {
     name: string;
+    short_name: string;
     nation: string;
     tier: number;
     type: string;
+    images: {
+        small_icon: string;
+        contour_icon: string;
+        big_icon: string;
+    };
     tank_id: number;
 }
 
@@ -85,6 +91,7 @@ export interface PlayerVehicleDetails {
     xp: number;
     frags: number;
     survived_battles: number;
+    winrate: number;
     wn8?: number;
 }
 

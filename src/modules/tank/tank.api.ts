@@ -23,7 +23,7 @@ export class TankApiService {
         const vehicleTypes = ['lightTank', 'mediumTank', 'heavyTank', 'AT-SPG', 'SPG'];
 
         const promises = vehicleTypes.map((type) => {
-            const fields = ['name', 'nation', 'tier', 'type', 'tank_id'];
+            const fields = ['name', 'nation', 'tier', 'type', 'tank_id', 'images', 'short_name'];
             const url = `https://api.worldoftanks.eu/wot/encyclopedia/vehicles/?application_id=${this.apiKey}&tier=${tier}&fields=${fields.join(',')}&type=${type}`;
 
             return [
@@ -48,11 +48,13 @@ export class TankApiService {
             SPG: [],
         };
 
+        // TODO: Remove foreach from this.
         responses.forEach(([type, response]) => {
             const tankMap = response.data.data;
             Object.values(tankMap).forEach((tank) => {
                 tanks[type].push(tank);
             });
+            tanks[type].sort((a, b) => a.nation.localeCompare(b.nation));
         });
 
         return tanks;
