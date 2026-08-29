@@ -8,7 +8,6 @@ import { TankModule } from './modules/tank/tank.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingMiddleware } from './common/middleware/logging.middleware';
-import { Wn8Module } from './modules/wn8/wn8.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { StorageModule } from './common/storage/storage.module';
 import { PlayerModule } from './modules/player/player.module';
@@ -25,7 +24,6 @@ import { PlayerModule } from './modules/player/player.module';
         ClanModule,
         UserModule,
         TankModule,
-        Wn8Module,
         StorageModule,
         PlayerModule,
     ],
